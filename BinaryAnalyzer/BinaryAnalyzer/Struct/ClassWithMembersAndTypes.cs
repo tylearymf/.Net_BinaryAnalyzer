@@ -7,12 +7,12 @@ namespace BinaryAnalyzer.Struct
     /// <summary>
     /// The ClassWithMembersAndTypes record is the most verbose of the Class records. It contains metadata about Members, including the names and Remoting Types of the Members. It also contains a Library ID that references the Library Name of the Class.
     /// </summary>
-    class ClassWithMembersAndTypes
+    class ClassWithMembersAndTypes : IRecordObject
     {
         /// <summary>
         /// RecordTypeEnumeration value that identifies the record type. Its value MUST be 5.
         /// </summary>
-        public RecordTypeEnumeration RecordTypeEnum { set; get; }
+        public RecordTypeEnumeration RecordTypeEnum { set; get; } = RecordTypeEnumeration.ClassWithMembersAndTypes;
         /// <summary>
         /// A ClassInfo structure that provides information about the name and Members of the Class.
         /// </summary>

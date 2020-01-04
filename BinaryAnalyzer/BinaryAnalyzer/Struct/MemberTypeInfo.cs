@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BinaryAnalyzer.RecordTypeHandler;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -7,8 +8,25 @@ namespace BinaryAnalyzer.Struct
     /// <summary>
     /// The MemberTypeInfo is a common structure that contains type information for Class (2) Members. It has the following structure.
     /// </summary>
-    class MemberTypeInfo
+    class MemberTypeInfo : BaseDeserializeObject
     {
+        public MemberTypeInfo(IAnalyze analyze, int memberCount) : base(analyze)
+        {
+            BinaryTypeEnums = new BinaryTypeEnumeration[memberCount];
+            AdditionalInfos = new object[memberCount];
+            for (int i = 0; i < memberCount; i++)
+            {
+                var type = (BinaryTypeEnumeration)analyze.Reader.ReadByte();
+                BinaryTypeEnums[i] = type;
+            }
+
+            for (int i = 0; i < memberCount; i++)
+            {
+                object value = Common.GetBinaryTypeValue(analyze, BinaryTypeEnums[i]);
+                AdditionalInfos[i] = value;
+            }
+        }
+
         /// <summary>
         /// A sequence of BinaryTypeEnumeration values that represents the Member Types that are being transferred. The Array MUST:
         /// ·Have the same number of items as the MemberCount field of the ClassInfo structure.
@@ -29,6 +47,6 @@ namespace BinaryAnalyzer.Struct
         /// ·The AdditionalInfos items MUST be in the same order as the corresponding BinaryTypeEnum items in the BinaryTypeEnums field.
         /// ·When the BinaryTypeEnum value is Primitive, the PrimitiveTypeEnumeration value in AdditionalInfo MUST NOT be Null (17) or String (18).
         /// </summary>
-        public object AdditionalInfos { set; get; }
+        public object[] AdditionalInfos { set; get; }
     }
 }

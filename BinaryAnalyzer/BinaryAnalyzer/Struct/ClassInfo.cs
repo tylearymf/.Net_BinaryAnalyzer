@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BinaryAnalyzer.RecordTypeHandler;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -7,8 +8,21 @@ namespace BinaryAnalyzer.Struct
     /// <summary>
     /// ClassInfo is a common structure used by all the Class (2) records. It has the following structure.
     /// </summary>
-    class ClassInfo
+    class ClassInfo : BaseDeserializeObject
     {
+        public ClassInfo(IAnalyze analyze) : base(analyze)
+        {
+            ObjectId = analyze.Reader.ReadInt32();
+            Name = new LengthPrefixedString(analyze);
+            MemberCount = analyze.Reader.ReadInt32();
+
+            MemberNames = new LengthPrefixedString[MemberCount];
+            for (int i = 0; i < MemberCount; i++)
+            {
+                MemberNames[i] = new LengthPrefixedString(analyze);
+            }
+        }
+
         /// <summary>
         /// An INT32 value (as specified in [MS-DTYP] section 2.2.22) that uniquely identifies the object in the serialization stream. An implementation MAY use any algorithm to
         /// </summary>

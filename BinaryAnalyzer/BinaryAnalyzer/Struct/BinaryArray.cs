@@ -7,12 +7,12 @@ namespace BinaryAnalyzer.Struct
     /// <summary>
     /// BinaryArray is the most general form of Array records. The record is more verbose than the other Array records.
     /// </summary>
-    class BinaryArray
+    class BinaryArray : IRecordObject
     {
         /// <summary>
         /// A RecordTypeEnumeration value that identifies the record type. Its value MUST be 7.
         /// </summary>
-        public RecordTypeEnumeration RecordTypeEnum { set; get; }
+        public RecordTypeEnumeration RecordTypeEnum { set; get; } = RecordTypeEnumeration.BinaryArray;
         /// <summary>
         /// An INT32 value (as specified in [MS-DTYP] section 2.2.22) that uniquely identifies the Array in the serialization stream. The value MUST be a positive integer. An implementation MAY use any algorithm to generate the unique IDs.<8>
         /// </summary>

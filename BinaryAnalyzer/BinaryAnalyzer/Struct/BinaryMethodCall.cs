@@ -7,12 +7,12 @@ namespace BinaryAnalyzer.Struct
     /// <summary>
     /// The BinaryMethodCall record contains information that is required to perform a Remote Method invocation.
     /// </summary>
-    class BinaryMethodCall
+    class BinaryMethodCall : IRecordObject
     {
         /// <summary>
         /// A RecordTypeEnumeration value that identifies the record type. The value MUST be 21.
         /// </summary>
-        public RecordTypeEnumeration RecordTypeEnum { set; get; }
+        public RecordTypeEnumeration RecordTypeEnum { set; get; } = RecordTypeEnumeration.MethodCall;
         /// <summary>
         /// A MessageFlags value that indicates whether the arguments and Call Context, Message Properties, Generic Arguments, and Method Signature are present. It also specifies whether the arguments and Call Context are present in this record or in the following MethodCallArray record. For this record type, the field MUST NOT contain the values from the Return and the Exception categories.
         /// </summary>

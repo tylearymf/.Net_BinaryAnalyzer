@@ -7,7 +7,7 @@ namespace BinaryAnalyzer.Struct
     /// <summary>
     /// The BinaryTypeEnumeration identifies the Remoting Type of a Class (2) Member or an Array item. The size of the enumeration is a BYTE.
     /// </summary>
-    enum BinaryTypeEnumeration
+    enum BinaryTypeEnumeration : byte
     {
         /// <summary>
         /// The Remoting Type is defined in PrimitiveTypeEnumeration and the Remoting Type is not a string.
@@ -39,7 +39,7 @@ namespace BinaryAnalyzer.Struct
         /// <summary>
         /// The Remoting Type is a single-dimensional Array of String with a lower bound of 0.
         /// </summary>
-        StringArray =  6,
+        StringArray = 6,
         /// <summary>
         /// The Remoting Type is a single-dimensional Array of a Primitive Type with a lower bound of 0.
         /// </summary>

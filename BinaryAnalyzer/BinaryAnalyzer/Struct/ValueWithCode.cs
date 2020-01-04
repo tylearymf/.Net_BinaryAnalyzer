@@ -1,14 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using BinaryAnalyzer.RecordTypeHandler;
 
 namespace BinaryAnalyzer.Struct
 {
     /// <summary>
     /// The ValueWithCode structure is used to associate a Primitive Value with an Enum that identifies the Primitive Type of the Primitive Value.
     /// </summary>
-    class ValueWithCode
+    class ValueWithCode : BaseDeserializeObject
     {
+        public ValueWithCode(IAnalyze analyze) : base(analyze)
+        {
+            PrimitiveTypeEnum = (PrimitiveTypeEnumeration)analyze.Reader.ReadByte();
+            Value = Common.GetPrimitiveTypeValue(analyze, PrimitiveTypeEnum);
+        }
+
         /// <summary>
         /// A PrimitiveTypeEnumeration value that specifies the type of the data.
         /// </summary>

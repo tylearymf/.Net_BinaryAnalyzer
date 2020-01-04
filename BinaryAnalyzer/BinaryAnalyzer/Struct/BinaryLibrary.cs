@@ -7,12 +7,12 @@ namespace BinaryAnalyzer.Struct
     /// <summary>
     /// The BinaryLibrary record associates an INT32 ID (as specified in [MS-DTYP] section 2.2.22) with a Library name. This allows other records to reference the Library name by using the ID. This approach reduces the wire size when there are multiple records that reference the same Library name.
     /// </summary>
-    class BinaryLibrary
+    class BinaryLibrary : IRecordObject
     {
         /// <summary>
         /// A RecordTypeEnumeration value that identifies the record type. The value MUST be 12.
         /// </summary>
-        public RecordTypeEnumeration RecordTypeEnum { set; get; }
+        public RecordTypeEnumeration RecordTypeEnum { set; get; } = RecordTypeEnumeration.BinaryLibrary;
         /// <summary>
         /// An INT32 value (as specified in [MS-DTYP] section 2.2.22) that uniquely identifies the Library name in the serialization stream. The value MUST be a positive integer. An implementation MAY use any algorithm to generate the unique IDs.<11>
         /// </summary>

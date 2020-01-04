@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BinaryAnalyzer.RecordTypeHandler;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -7,8 +8,18 @@ namespace BinaryAnalyzer.Struct
     /// <summary>
     /// The ArrayOfValueWithCode structure contains a list of ValueWithCode records. The list is prefixed with the length of the Array.
     /// </summary>
-    class ArrayOfValueWithCode
+    class ArrayOfValueWithCode : BaseDeserializeObject
     {
+        public ArrayOfValueWithCode(IAnalyze analyze) : base(analyze)
+        {
+            Length = analyze.Reader.ReadInt32();
+            ListOfValueWithCode = new ValueWithCode[Length];
+            for (int i = 0; i < Length; i++)
+            {
+                ListOfValueWithCode[i] = new ValueWithCode(analyze);
+            }
+        }
+
         /// <summary>
         /// An INT32 value (as specified in [MS-DTYP] section 2.2.22) that indicates the number of items in the Array. The value can range from 0 to 2147483647 (2^31) inclusive.
         /// </summary>

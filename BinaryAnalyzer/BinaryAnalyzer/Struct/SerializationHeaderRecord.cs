@@ -7,12 +7,12 @@ namespace BinaryAnalyzer.Struct
     /// <summary>
     /// The SerializationHeaderRecord record MUST be the first record in a binary serialization. This record has the major and minor version of the format and the IDs of the top object and the headers.
     /// </summary>
-    class SerializationHeaderRecord
+    class SerializationHeaderRecord : IRecordObject
     {
         /// <summary>
         /// A RecordTypeEnumeration value that identifies the record type. The value MUST be 0.
         /// </summary>
-        public RecordTypeEnumeration RecordTypeEnum { set; get; }
+        public RecordTypeEnumeration RecordTypeEnum { set; get; } = RecordTypeEnumeration.SerializedStreamHeader;
         /// <summary>
         /// An INT32 value (as specified in [MS-DTYP] section 2.2.22) that identifies the root of the graph of nodes. The value of the field is set as follows:
         /// ·If a BinaryMethodCall record is present in the serialization stream and if there is no MethodCallArray record following it, the value of this field MUST be 0; if a MethodCallArray record follows the BinaryMethodCall record, the value of this field MUST contain the ObjectId of the MethodCallArray.

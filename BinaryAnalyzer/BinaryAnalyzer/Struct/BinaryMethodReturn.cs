@@ -7,12 +7,12 @@ namespace BinaryAnalyzer.Struct
     /// <summary>
     /// The BinaryMethodReturn record contains the information returned by a Remote Method.
     /// </summary>
-    class BinaryMethodReturn
+    class BinaryMethodReturn : IRecordObject
     {
         /// <summary>
         /// A RecordTypeEnumeration value that identifies the record type. The value MUST be 22.
         /// </summary>
-        public RecordTypeEnumeration RecordTypeEnum { set; get; }
+        public RecordTypeEnumeration RecordTypeEnum { set; get; } = RecordTypeEnumeration.MethodReturn;
         /// <summary>
         /// A MessageFlags value that indicates whether the Return Value, Arguments, Message Properties, and Call Context are present. The value also specifies whether the Return Value, Arguments, and Call Context are present in this record or the following MethodReturnCallArray record. For this record, the field MUST NOT have the MethodSignatureInArray or GenericMethod bits set.
         /// </summary>

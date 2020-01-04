@@ -10,12 +10,12 @@ namespace BinaryAnalyzer.Struct
     /// The mechanism to serialize a Class instance is described in [MS-NRTP] section 3.1.5.1.6.
     /// The mechanism to serialize an Array instance is described in [MS-NRTP] section 3.1.5.1.7.
     /// </summary>
-    class MemberReference
+    class MemberReference : IRecordObject
     {
         /// <summary>
         /// A RecordTypeEnumeration value that identifies the record type. The value MUST be 9.
         /// </summary>
-        public RecordTypeEnumeration RecordTypeEnum { set; get; }
+        public RecordTypeEnumeration RecordTypeEnum { set; get; } = RecordTypeEnumeration.MemberReference;
         /// <summary>
         /// An INT32 value (as specified in [MS-DTYP] section 2.2.22) that is an ID of an object defined in another record.
         /// ·The value MUST be a positive integer.
