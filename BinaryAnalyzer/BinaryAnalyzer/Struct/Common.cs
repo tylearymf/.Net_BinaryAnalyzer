@@ -29,7 +29,8 @@ namespace BinaryAnalyzer.Struct
                     value = new ClassTypeInfo(analyze);
                     break;
                 case BinaryTypeEnumeration.PrimitiveArray:
-                    throw new NotImplementedException();
+                    value = (PrimitiveTypeEnumeration)analyze.Reader.ReadByte();
+                    break;
             }
 
             return value;

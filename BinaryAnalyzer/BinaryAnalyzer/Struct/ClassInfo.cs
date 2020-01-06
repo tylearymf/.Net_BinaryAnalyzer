@@ -1,4 +1,5 @@
-﻿using BinaryAnalyzer.RecordTypeHandler;
+﻿using BinaryAnalyzer.CustomException;
+using BinaryAnalyzer.RecordTypeHandler;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -13,6 +14,9 @@ namespace BinaryAnalyzer.Struct
         public ClassInfo(IAnalyze analyze) : base(analyze)
         {
             ObjectId = analyze.Reader.ReadInt32();
+			//暂时这么处理，ObjectId暂时应该不会大于该值
+            if (ObjectId >= 0xFFFF) throw new RollBackException();
+
             Name = new LengthPrefixedString(analyze);
             MemberCount = analyze.Reader.ReadInt32();
 

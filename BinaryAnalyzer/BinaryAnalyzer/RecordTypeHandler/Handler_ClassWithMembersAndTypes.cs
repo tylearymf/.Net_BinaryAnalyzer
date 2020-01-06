@@ -10,6 +10,8 @@ namespace BinaryAnalyzer.RecordTypeHandler
     {
         IRecordObject IRecordTypeHandler.Handle(IAnalyze analyze)
         {
+            if (analyze.LastRecordType == RecordTypeEnumeration.ClassWithId) return null;
+
             var record = new ClassWithMembersAndTypes();
             record.ClassInfo = new ClassInfo(analyze);
             record.MemberTypeInfo = new MemberTypeInfo(analyze, record.ClassInfo.MemberCount);

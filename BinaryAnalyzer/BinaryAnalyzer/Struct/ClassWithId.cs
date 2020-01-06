@@ -21,5 +21,9 @@ namespace BinaryAnalyzer.Struct
         /// An INT32 value (as specified in [MS-DTYP] section 2.2.22) that references one of the other Class records by its ObjectId. A SystemClassWithMembers, SystemClassWithMembersAndTypes, ClassWithMembers, or ClassWithMembersAndTypes record with the value of this field in its ObjectId field MUST appear earlier in the serialization stream.
         /// </summary>
         public Int32 MetadataId { set; get; }
+        /// <summary>
+        /// 貌似这里有个Int32的字段
+        /// </summary>
+        public Int32 TempId { set; get; }
     }
 }

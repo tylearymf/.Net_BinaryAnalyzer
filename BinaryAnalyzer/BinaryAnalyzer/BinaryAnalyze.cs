@@ -11,10 +11,12 @@ namespace BinaryAnalyzer
 {
     class BinaryAnalyze : IAnalyze
     {
+        RecordTypeEnumeration IAnalyze.LastRecordType { set; get; }
+        IRecordObject IAnalyze.LastObject { set; get; }
         BinaryReader IAnalyze.Reader { set; get; }
-        Action<BinaryAnalyze> onFinished { set; get; }
+        Action<BinaryAnalyze> OnFinished { set; get; }
 
-        public List<IRecordObject> recordObjects { protected set; get; }
+        public List<IRecordObject> RecordObjects { protected set; get; }
 
         static Dictionary<RecordTypeEnumeration, IRecordTypeHandler> recordTypeHandlerDic;
         static bool isInitDic;
@@ -45,8 +47,8 @@ namespace BinaryAnalyzer
         public BinaryAnalyze(BinaryReader br, Action<BinaryAnalyze> onFinished)
         {
             ((IAnalyze)this).Reader = br;
-            this.onFinished = onFinished;
-            recordObjects = new List<IRecordObject>();
+            this.OnFinished = onFinished;
+            RecordObjects = new List<IRecordObject>();
         }
 
         public void StartAnalyze()
@@ -54,49 +56,54 @@ namespace BinaryAnalyzer
             if (isStart) return;
             isStart = true;
 
-            AnalyzeNextByte();
+            while (!AnalyzeNextByte()) { }
         }
 
-        void AnalyzeNextByte()
+        bool AnalyzeNextByte()
         {
             var reader = ((IAnalyze)this).Reader;
 
             if (reader.BaseStream.Position < reader.BaseStream.Length)
             {
                 var recordType = (RecordTypeEnumeration)reader.ReadByte();
-                //while (recordType == RecordTypeEnumeration.SerializedStreamHeader)
-                //{
-                //    if (reader.BaseStream.Position == 1)
-                //    {
-                //        break;
-                //    }
-                //    else
-                //    {
-                //        recordType = (RecordTypeEnumeration)reader.ReadByte();
-                //    }
-                //}
-
-                HandleRecordType(recordType);
+                if (reader.BaseStream.Position < reader.BaseStream.Length)
+                {
+                    return HandleRecordType(recordType);
+                }
+                else
+                {
+                    OnFinished?.Invoke(this);
+                    return true;
+                }
             }
             else
             {
-                onFinished?.Invoke(this);
+                OnFinished?.Invoke(this);
+                return true;
             }
         }
 
-        void HandleRecordType(RecordTypeEnumeration recordType)
+        bool HandleRecordType(RecordTypeEnumeration recordType)
         {
             if (recordTypeHandlerDic.TryGetValue(recordType, out var handler))
             {
                 try
                 {
-                    var recordObject = handler?.Handle(this);
-                    RecordObject(recordObject);
-                    AnalyzeNextByte();
+                    var record = handler?.Handle(this);
+                    if (record != null)
+                    {
+                        ((IAnalyze)this).LastObject = record;
+                        ((IAnalyze)this).LastRecordType = recordType;
+
+                        RecordObject(record);
+                    }
+
+                    return false;
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.ToString());
+                    return true;
                 }
             }
             else

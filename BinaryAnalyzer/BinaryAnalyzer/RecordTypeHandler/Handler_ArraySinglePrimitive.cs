@@ -14,6 +14,11 @@ namespace BinaryAnalyzer.RecordTypeHandler
             record.ArrayInfo = new ArrayInfo(analyze);
             record.PrimitiveTypeEnum = (PrimitiveTypeEnumeration)analyze.Reader.ReadByte();
 
+            if (record.PrimitiveTypeEnum == PrimitiveTypeEnumeration.Byte)
+            {
+                record.Value = analyze.Reader.ReadBytes(record.ArrayInfo.Length);
+            }
+
             return record;
         }
     }

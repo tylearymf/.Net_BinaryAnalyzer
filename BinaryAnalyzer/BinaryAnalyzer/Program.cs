@@ -47,7 +47,7 @@ namespace BinaryAnalyzer
         {
             Console.WriteLine("Analyze Finished");
 
-            foreach (var item in analyze.recordObjects)
+            foreach (var item in analyze.RecordObjects)
             {
                 Console.WriteLine(item);
             }

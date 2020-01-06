@@ -10,6 +10,8 @@ namespace BinaryAnalyzer.RecordTypeHandler
     {
         IRecordObject IRecordTypeHandler.Handle(IAnalyze analyze)
         {
+            //if (analyze.LastRecordType == RecordTypeEnumeration.ClassWithId) return null;
+
             var record = new MemberPrimitiveTyped();
             record.PrimitiveTypeEnum = (PrimitiveTypeEnumeration)analyze.Reader.ReadByte();
             record.Value = Common.GetPrimitiveTypeValue(analyze, record.PrimitiveTypeEnum);

@@ -22,5 +22,9 @@ namespace BinaryAnalyzer.Struct
         /// A PrimitiveTypeEnumeration value that identifies the Primitive Type of the items of the Array. The value MUST NOT be 17 (Null) or 18 (String).
         /// </summary>
         public PrimitiveTypeEnumeration PrimitiveTypeEnum { set; get; }
+        /// <summary>
+        /// 如果是PrimitiveTypeEnum是Byte类型，则需要读取ArrayInfo.Length长度的字节流
+        /// </summary>
+        public object Value { set; get; }
     }
 }
