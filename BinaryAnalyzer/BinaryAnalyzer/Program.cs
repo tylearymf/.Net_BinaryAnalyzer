@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BinaryAnalyzer.Misc;
+using System;
 using System.IO;
 
 namespace BinaryAnalyzer
@@ -26,7 +27,7 @@ namespace BinaryAnalyzer
                     fs = new FileStream(input, FileMode.Open);
                     br = new BinaryReader(fs);
 
-                    var analyze = new BinaryAnalyze(br, OnAnalyzeFinished);
+                    var analyze = new BinaryAnalyze(input, br, OnAnalyzeFinished);
                     analyze.StartAnalyze();
                     msg = "反序列化完成.";
                 }
@@ -51,6 +52,10 @@ namespace BinaryAnalyzer
             {
                 Console.WriteLine(item);
             }
+
+            var fileInfo = new FileInfo(analyze.FilePath);
+            var csFilePath = Path.Combine(fileInfo.DirectoryName, fileInfo.Name.Replace(fileInfo.Extension, string.Empty) + ".cs");
+            CSGenerator.Generate(analyze.RecordObjects, csFilePath);
         }
     }
 }

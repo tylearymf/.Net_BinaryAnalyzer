@@ -1,5 +1,7 @@
 ﻿using BinaryAnalyzer.Attribute;
+using BinaryAnalyzer.Misc;
 using BinaryAnalyzer.Struct;
+using BinaryAnalyzer.Interface;
 using System;
 using System.IO;
 
@@ -21,7 +23,7 @@ namespace BinaryAnalyzer.RecordTypeHandler
             var record = new ClassWithId();
             record.ObjectId = analyze.Reader.ReadInt32();
 
-            if (record.ObjectId < 0)
+            if (!Checker.CheckId(record.ObjectId))
             {
                 analyze.Reader.BaseStream.Position -= 4;
                 return null;
@@ -30,7 +32,7 @@ namespace BinaryAnalyzer.RecordTypeHandler
             record.MetadataId = analyze.Reader.ReadInt32();
             record.TempId = analyze.Reader.ReadInt32();
 
-			//ClassWithId后面老是会跟个4字节的干扰数据，这里检查下
+            //ClassWithId后面老是会跟个4字节的干扰数据，这里检查下
             var pos = analyze.Reader.BaseStream.Position;
             var value = analyze.Reader.ReadInt32();
             if (value > 0xFF)

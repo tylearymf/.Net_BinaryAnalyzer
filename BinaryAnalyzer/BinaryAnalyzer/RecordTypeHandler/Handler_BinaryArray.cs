@@ -1,5 +1,7 @@
 ﻿using BinaryAnalyzer.Attribute;
+using BinaryAnalyzer.Misc;
 using BinaryAnalyzer.Struct;
+using BinaryAnalyzer.Interface;
 using System;
 using System.IO;
 
@@ -12,6 +14,13 @@ namespace BinaryAnalyzer.RecordTypeHandler
         {
             var record = new BinaryArray();
             record.ObjectId = analyze.Reader.ReadInt32();
+
+            if (!Checker.CheckId(record.ObjectId))
+            {
+                analyze.Reader.BaseStream.Position -= 4;
+                return null;
+            }
+
             record.BinaryArrayTypeEnum = (BinaryArrayTypeEnumeration)analyze.Reader.ReadByte();
             record.Rank = analyze.Reader.ReadInt32();
             record.Lengths = new Int32[record.Rank];

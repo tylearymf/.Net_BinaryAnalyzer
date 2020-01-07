@@ -1,7 +1,7 @@
 ﻿using BinaryAnalyzer.Struct;
 using System.IO;
 
-namespace BinaryAnalyzer.RecordTypeHandler
+namespace BinaryAnalyzer.Interface
 {
     interface IAnalyze
     {

@@ -1,5 +1,7 @@
 ﻿using BinaryAnalyzer.Attribute;
+using BinaryAnalyzer.Misc;
 using BinaryAnalyzer.Struct;
+using BinaryAnalyzer.Interface;
 using System;
 using System.IO;
 
@@ -15,6 +17,13 @@ namespace BinaryAnalyzer.RecordTypeHandler
 
             var record = new BinaryObjectString();
             record.ObjectId = analyze.Reader.ReadInt32();
+
+            if (!Checker.CheckId(record.ObjectId))
+            {
+                analyze.Reader.BaseStream.Position -= 4;
+                return null;
+            }
+
             record.Value = new LengthPrefixedString(analyze);
 
             return record;

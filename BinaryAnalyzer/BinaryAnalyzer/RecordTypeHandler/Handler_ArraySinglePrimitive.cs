@@ -1,5 +1,6 @@
 ﻿using BinaryAnalyzer.Attribute;
 using BinaryAnalyzer.Struct;
+using BinaryAnalyzer.Interface;
 using System;
 using System.IO;
 

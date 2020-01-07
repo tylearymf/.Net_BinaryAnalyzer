@@ -1,4 +1,5 @@
 ﻿using BinaryAnalyzer.RecordTypeHandler;
+using BinaryAnalyzer.Interface;
 using System;
 using System.Collections.Generic;
 using System.Text;

@@ -1,5 +1,7 @@
 ﻿using BinaryAnalyzer.Attribute;
+using BinaryAnalyzer.CustomException;
 using BinaryAnalyzer.Struct;
+using BinaryAnalyzer.Interface;
 using System;
 using System.IO;
 
@@ -13,8 +15,18 @@ namespace BinaryAnalyzer.RecordTypeHandler
             //
             if (analyze.LastRecordType == RecordTypeEnumeration.ClassWithId) return null;
 
-            var record = new ClassWithMembers();
-            record.ClassInfo = new ClassInfo(analyze);
+            ClassWithMembers record = null;
+
+            try
+            {
+                record = new ClassWithMembers();
+                record.ClassInfo = new ClassInfo(analyze);
+            }
+            catch (RollBackException ex)
+            {
+                analyze.Reader.BaseStream.Position += ex.Offset;
+                return null;
+            }
             record.LibraryId = analyze.Reader.ReadInt32();
 
             return record;

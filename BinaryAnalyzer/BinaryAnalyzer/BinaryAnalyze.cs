@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using BinaryAnalyzer.Attribute;
-using BinaryAnalyzer.RecordTypeHandler;
+using BinaryAnalyzer.Interface;
 using BinaryAnalyzer.Struct;
 
 namespace BinaryAnalyzer
@@ -14,6 +14,8 @@ namespace BinaryAnalyzer
         RecordTypeEnumeration IAnalyze.LastRecordType { set; get; }
         IRecordObject IAnalyze.LastObject { set; get; }
         BinaryReader IAnalyze.Reader { set; get; }
+
+        public string FilePath { protected set; get; }
         Action<BinaryAnalyze> OnFinished { set; get; }
 
         public List<IRecordObject> RecordObjects { protected set; get; }
@@ -44,8 +46,9 @@ namespace BinaryAnalyzer
             }
         }
 
-        public BinaryAnalyze(BinaryReader br, Action<BinaryAnalyze> onFinished)
+        public BinaryAnalyze(string filePath, BinaryReader br, Action<BinaryAnalyze> onFinished)
         {
+            FilePath = filePath;
             ((IAnalyze)this).Reader = br;
             this.OnFinished = onFinished;
             RecordObjects = new List<IRecordObject>();
@@ -57,6 +60,10 @@ namespace BinaryAnalyzer
             isStart = true;
 
             while (!AnalyzeNextByte()) { }
+
+            isStart = false;
+
+
         }
 
         bool AnalyzeNextByte()
@@ -108,14 +115,17 @@ namespace BinaryAnalyzer
             }
             else
             {
-                throw new NotImplementedException();
+                //遇到不存在的类型，直接跳过，继续读取下一个字节
+                return false;
             }
         }
 
-        void RecordObject(IRecordObject obj)
+        void RecordObject(IRecordObject recordObject)
         {
-            if (obj == null) throw new NullReferenceException("recordObject is null");
-            recordObjects.Add(obj);
+            if (recordObject == null) throw new NullReferenceException("recordObject is null");
+            RecordObjects.Add(recordObject);
         }
+
+
     }
 }
