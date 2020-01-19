@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BinaryAnalyzer.Struct;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -13,7 +14,26 @@ namespace BinaryAnalyzer.Misc
         /// <returns></returns>
         static public bool CheckId(int id)
         {
-            if (id <= 0 || id >= 0xFFFF) return false;
+            if (id <= 0 || id >= 0xFFFF)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// 检查是否符合MessageFlags的值
+        /// </summary>
+        /// <param name="flags"></param>
+        /// <returns></returns>
+        static public bool CheckMessageFlags(MessageFlags flags)
+        {
+            if (flags <= MessageFlags.NoArgs || flags >= MessageFlags.GenericMethod)
+            {
+                return false;
+            }
+
             return true;
         }
     }

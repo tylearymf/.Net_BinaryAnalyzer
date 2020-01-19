@@ -69,19 +69,13 @@ namespace BinaryAnalyzer
         bool AnalyzeNextByte()
         {
             var reader = ((IAnalyze)this).Reader;
+            var position = reader.BaseStream.Position;
+            var length = reader.BaseStream.Length;
 
-            if (reader.BaseStream.Position < reader.BaseStream.Length)
+            if (length - position > 2)
             {
                 var recordType = (RecordTypeEnumeration)reader.ReadByte();
-                if (reader.BaseStream.Position < reader.BaseStream.Length)
-                {
-                    return HandleRecordType(recordType);
-                }
-                else
-                {
-                    OnFinished?.Invoke(this);
-                    return true;
-                }
+                return HandleRecordType(recordType);
             }
             else
             {

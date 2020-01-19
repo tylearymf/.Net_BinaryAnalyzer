@@ -3,6 +3,8 @@ using BinaryAnalyzer.Interface;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using BinaryAnalyzer.CustomException;
+using BinaryAnalyzer.Misc;
 
 namespace BinaryAnalyzer.Struct
 {
@@ -14,6 +16,12 @@ namespace BinaryAnalyzer.Struct
         public ArrayInfo(IAnalyze analyze) : base(analyze)
         {
             ObjectId = analyze.Reader.ReadInt32();
+
+            if (!Checker.CheckId(ObjectId))
+            {
+                throw new RollBackException(-4);
+            }
+
             Length = analyze.Reader.ReadInt32();
         }
 

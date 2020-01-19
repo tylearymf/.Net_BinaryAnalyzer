@@ -6,12 +6,18 @@ using System.Linq;
 using BinaryAnalyzer.Struct;
 using System.IO;
 using System.Text.RegularExpressions;
+using BinaryAnalyzer.Extensions;
 
-namespace BinaryAnalyzer.Misc
+namespace BinaryAnalyzer.Generator
 {
     class CSGenerator
     {
         const string k_BackingField = "k__BackingField";
+        class GenerateInfo
+        {
+            public ClassInfo ClassInfo;
+            public MemberTypeInfo MemberTypeInfo;
+        }
 
         static public void Generate(List<IRecordObject> recordObjects, string csFilePath)
         {
@@ -20,15 +26,15 @@ namespace BinaryAnalyzer.Misc
                 if (x is ClassWithMembersAndTypes)
                 {
                     var c = x as ClassWithMembersAndTypes;
-                    return new { ClasInfo = c.ClassInfo, MemberTypeInfo = c.MemberTypeInfo };
+                    return new GenerateInfo() { ClassInfo = c.ClassInfo, MemberTypeInfo = c.MemberTypeInfo };
                 }
                 else if (x is SystemClassWithMembersAndTypes)
                 {
                     var c = x as SystemClassWithMembersAndTypes;
-                    return new { ClasInfo = c.ClassInfo, MemberTypeInfo = c.MemberTypeInfo };
+                    return new GenerateInfo() { ClassInfo = c.ClassInfo, MemberTypeInfo = c.MemberTypeInfo };
                 }
 
-                throw new NotImplementedException();
+                return new GenerateInfo();
             });
 
             var builder = new StringBuilder(2048);
@@ -38,18 +44,45 @@ namespace BinaryAnalyzer.Misc
 
             foreach (var item in list)
             {
-                var className = item.ClasInfo.Name.Value;
+                if (item.ClassInfo == null || item.MemberTypeInfo == null) continue;
+
+                var tupleInfo = CSExtensions.GetClassNameTree(item.ClassInfo.Name.Value);
                 ////系统类跳过
                 //if (className.StartsWith("System")) continue;
 
-                var memberCount = item.ClasInfo.MemberCount;
-                var memberNames = item.ClasInfo.MemberNames.ToList().ConvertAll(x => x.Value);
+                var memberCount = item.ClassInfo.MemberCount;
+                var memberNames = item.ClassInfo.MemberNames.ToList().ConvertAll(x => x.Value);
                 var binaryTypeEnums = item.MemberTypeInfo.BinaryTypeEnums;
                 var additionalInfos = item.MemberTypeInfo.AdditionalInfos;
 
-                builder.AppendFormat("class {0}", className);
-                builder.AppendLine();
-                builder.AppendLine("{");
+                var hasNamespace = !string.IsNullOrEmpty(tupleInfo.Item1);
+                var hasClass1 = !string.IsNullOrEmpty(tupleInfo.Item2);
+                var hasClass2 = !string.IsNullOrEmpty(tupleInfo.Item3);
+                var tabIndex = 0;
+
+                if (hasNamespace)
+                {
+                    builder.AppendFormat("namespace {0}", tupleInfo.Item1);
+                    builder.AppendLine();
+                    builder.AppendLine("{");
+                    tabIndex++;
+                }
+                if (hasClass1)
+                {
+                    builder.AppendFormat("{0}class {1}", new string('\t', tabIndex), tupleInfo.Item2);
+                    builder.AppendLine();
+                    builder.AppendFormat("{0}{{", new string('\t', tabIndex));
+                    builder.AppendLine();
+                    tabIndex++;
+                }
+                if (hasClass2)
+                {
+                    builder.AppendFormat("{0}class {1}", new string('\t', tabIndex), tupleInfo.Item3);
+                    builder.AppendLine();
+                    builder.AppendFormat("{0}{{", new string('\t', tabIndex));
+                    builder.AppendLine();
+                    tabIndex++;
+                }
                 {
                     for (int i = 0; i < memberCount; i++)
                     {
@@ -88,12 +121,33 @@ namespace BinaryAnalyzer.Misc
                             memberName = match.Groups[1].Value;
                         }
 
-                        builder.AppendFormat("\tpublic {0} {1}{2}", memberType, memberName, isProperty ? " { set; get; }" : ";");
+                        if (CSExtensions.IsKeyword(memberName))
+                        {
+                            memberName = "@" + memberName;
+                        }
+
+                        builder.AppendFormat("{0}public {1} {2}{3}", new string('\t', tabIndex), memberType, memberName, isProperty ? " { set; get; }" : ";");
                         builder.AppendLine();
                     }
                 }
-                builder.AppendLine("}");
-                builder.AppendLine();
+                if (hasClass2)
+                {
+                    tabIndex--;
+                    builder.AppendFormat("{0}}}", new string('\t', tabIndex));
+                    builder.AppendLine();
+                }
+                if (hasClass1)
+                {
+                    tabIndex--;
+                    builder.AppendFormat("{0}}}", new string('\t', tabIndex));
+                    builder.AppendLine();
+                }
+                if (hasNamespace)
+                {
+                    tabIndex--;
+                    builder.AppendLine("}");
+                    builder.AppendLine();
+                }
             }
 
             File.WriteAllText(csFilePath, builder.ToString());

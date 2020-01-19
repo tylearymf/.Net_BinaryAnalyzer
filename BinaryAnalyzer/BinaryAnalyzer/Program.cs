@@ -1,4 +1,5 @@
-﻿using BinaryAnalyzer.Misc;
+﻿using BinaryAnalyzer.Generator;
+using BinaryAnalyzer.Misc;
 using System;
 using System.IO;
 
@@ -11,7 +12,7 @@ namespace BinaryAnalyzer
             while (true)
             {
                 Console.WriteLine("拖入需要反序列化的文件/输入文件路径：");
-                var input = Console.ReadLine();
+                var input = Console.ReadLine().Trim('"');
 
                 if (!File.Exists(input))
                 {
