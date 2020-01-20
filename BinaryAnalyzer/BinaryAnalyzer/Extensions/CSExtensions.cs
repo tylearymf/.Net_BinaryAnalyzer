@@ -61,7 +61,7 @@ namespace BinaryAnalyzer.Extensions
                 throw new Exception("暂不支持嵌套结构解析");
             }
 
-            var match = Regex.Match(name, @"((?<namespace>\w+)\.)?(?<class1>\w+)(\+(?<class2>\w+))?");
+            var match = Regex.Match(name, @"((?<namespace>[\w\.]+)\.)?(?<class1>\w+)(\+(?<class2>\w+))?");
             if (!match.Success)
             {
                 throw new Exception("类名解析失败");

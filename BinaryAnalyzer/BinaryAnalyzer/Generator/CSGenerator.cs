@@ -125,6 +125,7 @@ namespace BinaryAnalyzer.Generator
                         {
                             memberName = "@" + memberName;
                         }
+                        memberType = memberType.Replace("+", ".");
 
                         builder.AppendFormat("{0}public {1} {2}{3}", new string('\t', tabIndex), memberType, memberName, isProperty ? " { set; get; }" : ";");
                         builder.AppendLine();
