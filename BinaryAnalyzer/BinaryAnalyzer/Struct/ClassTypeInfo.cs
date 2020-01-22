@@ -3,6 +3,7 @@ using BinaryAnalyzer.Interface;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using BinaryAnalyzer.Misc;
 
 namespace BinaryAnalyzer.Struct
 {
@@ -14,6 +15,8 @@ namespace BinaryAnalyzer.Struct
         public ClassTypeInfo(IAnalyze analyze) : base(analyze)
         {
             TypeName = new LengthPrefixedString(analyze);
+            Assert.IsMemberName(TypeName.Value);
+
             LibraryId = analyze.Reader.ReadInt32();
         }
 

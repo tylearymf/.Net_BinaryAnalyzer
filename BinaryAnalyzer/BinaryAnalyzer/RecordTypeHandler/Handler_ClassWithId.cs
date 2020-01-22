@@ -22,12 +22,7 @@ namespace BinaryAnalyzer.RecordTypeHandler
 
             var record = new ClassWithId();
             record.ObjectId = analyze.Reader.ReadInt32();
-
-            if (!Checker.CheckId(record.ObjectId))
-            {
-                analyze.Reader.BaseStream.Position -= 4;
-                return null;
-            }
+            Assert.IsObjectId(record.ObjectId);
 
             record.MetadataId = analyze.Reader.ReadInt32();
             record.TempId = analyze.Reader.ReadInt32();

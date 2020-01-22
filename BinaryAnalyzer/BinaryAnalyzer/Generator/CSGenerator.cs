@@ -12,7 +12,7 @@ namespace BinaryAnalyzer.Generator
 {
     class CSGenerator
     {
-        const string k_BackingField = "k__BackingField";
+        public const string k_BackingField = "k__BackingField";
         class GenerateInfo
         {
             public ClassInfo ClassInfo;
@@ -23,18 +23,28 @@ namespace BinaryAnalyzer.Generator
         {
             var list = recordObjects.FindAll(x => x is ClassWithMembersAndTypes || x is SystemClassWithMembersAndTypes).ConvertAll(x =>
             {
+                GenerateInfo info = null;
                 if (x is ClassWithMembersAndTypes)
                 {
                     var c = x as ClassWithMembersAndTypes;
-                    return new GenerateInfo() { ClassInfo = c.ClassInfo, MemberTypeInfo = c.MemberTypeInfo };
+                    info = new GenerateInfo() { ClassInfo = c.ClassInfo, MemberTypeInfo = c.MemberTypeInfo };
                 }
                 else if (x is SystemClassWithMembersAndTypes)
                 {
                     var c = x as SystemClassWithMembersAndTypes;
-                    return new GenerateInfo() { ClassInfo = c.ClassInfo, MemberTypeInfo = c.MemberTypeInfo };
+                    info = new GenerateInfo() { ClassInfo = c.ClassInfo, MemberTypeInfo = c.MemberTypeInfo };
                 }
 
-                return new GenerateInfo();
+                if (info != null && info.ClassInfo != null)
+                {
+                    //系统类跳过
+                    if (info.ClassInfo.Name.Value.StartsWith("System"))
+                    {
+                        return null;
+                    }
+                }
+
+                return info;
             });
 
             var builder = new StringBuilder(2048);
@@ -44,11 +54,9 @@ namespace BinaryAnalyzer.Generator
 
             foreach (var item in list)
             {
-                if (item.ClassInfo == null || item.MemberTypeInfo == null) continue;
+                if (item == null) continue;
 
                 var tupleInfo = CSExtensions.GetClassNameTree(item.ClassInfo.Name.Value);
-                ////系统类跳过
-                //if (className.StartsWith("System")) continue;
 
                 var memberCount = item.ClassInfo.MemberCount;
                 var memberNames = item.ClassInfo.MemberNames.ToList().ConvertAll(x => x.Value);

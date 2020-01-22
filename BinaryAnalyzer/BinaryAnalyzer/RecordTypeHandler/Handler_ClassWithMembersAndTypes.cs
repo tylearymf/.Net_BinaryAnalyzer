@@ -14,19 +14,8 @@ namespace BinaryAnalyzer.RecordTypeHandler
         {
             if (analyze.LastRecordType == RecordTypeEnumeration.ClassWithId) return null;
 
-            ClassWithMembersAndTypes record = null;
-
-            try
-            {
-                record = new ClassWithMembersAndTypes();
-                record.ClassInfo = new ClassInfo(analyze);
-            }
-            catch (RollBackException ex)
-            {
-                analyze.Reader.BaseStream.Position += ex.Offset;
-                return null;
-            }
-
+            var record = new ClassWithMembersAndTypes();
+            record.ClassInfo = new ClassInfo(analyze);
             record.MemberTypeInfo = new MemberTypeInfo(analyze, record.ClassInfo.MemberCount);
             record.LibraryId = analyze.Reader.ReadInt32();
 

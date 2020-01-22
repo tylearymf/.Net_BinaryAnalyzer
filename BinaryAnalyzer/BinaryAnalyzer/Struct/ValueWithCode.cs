@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using BinaryAnalyzer.RecordTypeHandler;
 using BinaryAnalyzer.Interface;
+using BinaryAnalyzer.Misc;
 
 namespace BinaryAnalyzer.Struct
 {
@@ -14,6 +15,8 @@ namespace BinaryAnalyzer.Struct
         public ValueWithCode(IAnalyze analyze) : base(analyze)
         {
             PrimitiveTypeEnum = (PrimitiveTypeEnumeration)analyze.Reader.ReadByte();
+            Assert.IsPrimitiveTypeEnum(PrimitiveTypeEnum);
+
             Value = Common.GetPrimitiveTypeValue(analyze, PrimitiveTypeEnum);
         }
 

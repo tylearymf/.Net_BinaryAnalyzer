@@ -16,13 +16,9 @@ namespace BinaryAnalyzer.Struct
         public ArrayInfo(IAnalyze analyze) : base(analyze)
         {
             ObjectId = analyze.Reader.ReadInt32();
-
-            if (!Checker.CheckId(ObjectId))
-            {
-                throw new RollBackException(-4);
-            }
-
+            Assert.IsObjectId(ObjectId);
             Length = analyze.Reader.ReadInt32();
+            Assert.IsPositiveIntegerIncludeZero(Length);
         }
 
         /// <summary>

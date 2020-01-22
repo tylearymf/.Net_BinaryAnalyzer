@@ -3,6 +3,7 @@ using BinaryAnalyzer.Struct;
 using BinaryAnalyzer.Interface;
 using System;
 using System.IO;
+using BinaryAnalyzer.Misc;
 
 namespace BinaryAnalyzer.RecordTypeHandler
 {
@@ -13,6 +14,7 @@ namespace BinaryAnalyzer.RecordTypeHandler
         {
             var record = new MemberReference();
             record.IdRef = analyze.Reader.ReadInt32();
+            Assert.IsIdRef(record.IdRef);
 
             return record;
         }

@@ -12,21 +12,10 @@ namespace BinaryAnalyzer.RecordTypeHandler
     {
         IRecordObject IRecordTypeHandler.Handle(IAnalyze analyze)
         {
-            //
             if (analyze.LastRecordType == RecordTypeEnumeration.ClassWithId) return null;
 
-            ClassWithMembers record = null;
-
-            try
-            {
-                record = new ClassWithMembers();
-                record.ClassInfo = new ClassInfo(analyze);
-            }
-            catch (RollBackException ex)
-            {
-                analyze.Reader.BaseStream.Position += ex.Offset;
-                return null;
-            }
+            var record = new ClassWithMembers();
+            record.ClassInfo = new ClassInfo(analyze);
             record.LibraryId = analyze.Reader.ReadInt32();
 
             return record;

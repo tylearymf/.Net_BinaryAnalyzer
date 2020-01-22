@@ -5,6 +5,7 @@ using BinaryAnalyzer.Interface;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using BinaryAnalyzer.Extensions;
 
 namespace BinaryAnalyzer.Struct
 {
@@ -17,18 +18,19 @@ namespace BinaryAnalyzer.Struct
         {
             ObjectId = analyze.Reader.ReadInt32();
             //暂时这么处理，ObjectId暂时应该不会大于该值
-            if (!Checker.CheckId(ObjectId))
-            {
-                throw new RollBackException(-4);
-            }
+            Assert.IsObjectId(ObjectId);
 
             Name = new LengthPrefixedString(analyze);
+            Assert.IsMemberName(Name.Value);
+
             MemberCount = analyze.Reader.ReadInt32();
+            Assert.IsPositiveIntegerIncludeZero(MemberCount);
 
             MemberNames = new LengthPrefixedString[MemberCount];
             for (int i = 0; i < MemberCount; i++)
             {
                 MemberNames[i] = new LengthPrefixedString(analyze);
+                Assert.IsMemberName(MemberNames[i].Value);
             }
         }
 

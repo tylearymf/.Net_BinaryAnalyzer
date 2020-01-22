@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using BinaryAnalyzer.Attribute;
+using BinaryAnalyzer.CustomException;
 using BinaryAnalyzer.Interface;
 using BinaryAnalyzer.Struct;
 
@@ -88,6 +89,9 @@ namespace BinaryAnalyzer
         {
             if (recordTypeHandlerDic.TryGetValue(recordType, out var handler))
             {
+                var analyze = (IAnalyze)this;
+                var pos = analyze.Reader.BaseStream.Position;
+
                 try
                 {
                     var record = handler?.Handle(this);
@@ -99,6 +103,11 @@ namespace BinaryAnalyzer
                         RecordObject(record);
                     }
 
+                    return false;
+                }
+                catch (RollBackException ex)
+                {
+                    analyze.Reader.BaseStream.Position = pos;
                     return false;
                 }
                 catch (Exception ex)

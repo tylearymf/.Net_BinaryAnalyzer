@@ -12,7 +12,7 @@ namespace BinaryAnalyzer.RecordTypeHandler
         IRecordObject IRecordTypeHandler.Handle(IAnalyze analyze)
         {
             //EOF
-			//感觉是无意义的数据
+            //感觉是无意义的数据
             while (analyze.Reader.BaseStream.Position < analyze.Reader.BaseStream.Length)
             {
                 if (analyze.Reader.BaseStream.Position == 1)

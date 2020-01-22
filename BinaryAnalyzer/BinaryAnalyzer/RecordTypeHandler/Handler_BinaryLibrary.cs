@@ -13,12 +13,9 @@ namespace BinaryAnalyzer.RecordTypeHandler
         IRecordObject IRecordTypeHandler.Handle(IAnalyze analyze)
         {
             var record = new BinaryLibrary();
+
             record.LibraryId = analyze.Reader.ReadInt32();
-            if (!Checker.CheckId(record.LibraryId))
-            {
-                analyze.Reader.BaseStream.Position -= 4;
-                return null;
-            }
+            Assert.IsLibraryId(record.LibraryId);
 
             record.LibraryName = new LengthPrefixedString(analyze);
 

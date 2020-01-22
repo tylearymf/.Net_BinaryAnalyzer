@@ -4,6 +4,7 @@ using BinaryAnalyzer.Interface;
 using System;
 using System.IO;
 using BinaryAnalyzer.CustomException;
+using BinaryAnalyzer.Misc;
 
 namespace BinaryAnalyzer.RecordTypeHandler
 {
@@ -13,18 +14,10 @@ namespace BinaryAnalyzer.RecordTypeHandler
         IRecordObject IRecordTypeHandler.Handle(IAnalyze analyze)
         {
             var record = new ArraySinglePrimitive();
-
-            try
-            {
-                record.ArrayInfo = new ArrayInfo(analyze);
-            }
-            catch (RollBackException ex)
-            {
-                analyze.Reader.BaseStream.Position += ex.Offset;
-                return null;
-            }
-
+            record.ArrayInfo = new ArrayInfo(analyze);
             record.PrimitiveTypeEnum = (PrimitiveTypeEnumeration)analyze.Reader.ReadByte();
+            Assert.IsPrimitiveTypeEnum(record.PrimitiveTypeEnum);
+
             if (record.PrimitiveTypeEnum == PrimitiveTypeEnumeration.Byte)
             {
                 record.Value = analyze.Reader.ReadBytes(record.ArrayInfo.Length);

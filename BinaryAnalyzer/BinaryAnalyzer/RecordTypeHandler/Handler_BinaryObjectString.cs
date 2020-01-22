@@ -12,17 +12,10 @@ namespace BinaryAnalyzer.RecordTypeHandler
     {
         IRecordObject IRecordTypeHandler.Handle(IAnalyze analyze)
         {
-            ////
-            //if (analyze.LastObject is ClassWithId) return null;
-
             var record = new BinaryObjectString();
-            record.ObjectId = analyze.Reader.ReadInt32();
 
-            if (!Checker.CheckId(record.ObjectId))
-            {
-                analyze.Reader.BaseStream.Position -= 4;
-                return null;
-            }
+            record.ObjectId = analyze.Reader.ReadInt32();
+            Assert.IsObjectId(record.ObjectId);
 
             record.Value = new LengthPrefixedString(analyze);
 

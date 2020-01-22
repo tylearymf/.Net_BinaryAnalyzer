@@ -13,16 +13,7 @@ namespace BinaryAnalyzer.RecordTypeHandler
         IRecordObject IRecordTypeHandler.Handle(IAnalyze analyze)
         {
             var record = new ArraySingleString();
-
-            try
-            {
-                record.ArrayInfo = new ArrayInfo(analyze);
-            }
-            catch (RollBackException ex)
-            {
-                analyze.Reader.BaseStream.Position += ex.Offset;
-                return null;
-            }
+            record.ArrayInfo = new ArrayInfo(analyze);
 
             return record;
         }

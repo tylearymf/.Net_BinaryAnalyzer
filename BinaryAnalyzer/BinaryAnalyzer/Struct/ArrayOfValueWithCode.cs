@@ -3,6 +3,8 @@ using BinaryAnalyzer.Interface;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using BinaryAnalyzer.CustomException;
+using BinaryAnalyzer.Misc;
 
 namespace BinaryAnalyzer.Struct
 {
@@ -14,6 +16,8 @@ namespace BinaryAnalyzer.Struct
         public ArrayOfValueWithCode(IAnalyze analyze) : base(analyze)
         {
             Length = analyze.Reader.ReadInt32();
+            Assert.IsPositiveIntegerIncludeZero(Length);
+
             ListOfValueWithCode = new ValueWithCode[Length];
             for (int i = 0; i < Length; i++)
             {

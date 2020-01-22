@@ -3,6 +3,7 @@ using BinaryAnalyzer.Interface;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using BinaryAnalyzer.Misc;
 
 namespace BinaryAnalyzer.Struct
 {
@@ -18,6 +19,8 @@ namespace BinaryAnalyzer.Struct
             for (int i = 0; i < memberCount; i++)
             {
                 var type = (BinaryTypeEnumeration)analyze.Reader.ReadByte();
+                Assert.IsBinaryTypeEnum(type);
+
                 BinaryTypeEnums[i] = type;
             }
 
