@@ -56,7 +56,7 @@ namespace BinaryAnalyzer.Generator
             {
                 if (item == null) continue;
 
-                var tupleInfo = CSExtensions.GetClassNameTree(item.ClassInfo.Name.Value);
+                var tupleInfo = CSExtensions.GetNamespaceAndClassNames(item.ClassInfo.Name.Value);
 
                 var memberCount = item.ClassInfo.MemberCount;
                 var memberNames = item.ClassInfo.MemberNames.ToList().ConvertAll(x => x.Value);
@@ -64,8 +64,6 @@ namespace BinaryAnalyzer.Generator
                 var additionalInfos = item.MemberTypeInfo.AdditionalInfos;
 
                 var hasNamespace = !string.IsNullOrEmpty(tupleInfo.Item1);
-                var hasClass1 = !string.IsNullOrEmpty(tupleInfo.Item2);
-                var hasClass2 = !string.IsNullOrEmpty(tupleInfo.Item3);
                 var tabIndex = 0;
 
                 if (hasNamespace)
@@ -75,22 +73,18 @@ namespace BinaryAnalyzer.Generator
                     builder.AppendLine("{");
                     tabIndex++;
                 }
-                if (hasClass1)
+
+                foreach (var className in tupleInfo.Item2)
                 {
-                    builder.AppendFormat("{0}class {1}", new string('\t', tabIndex), tupleInfo.Item2);
+                    builder.AppendFormat("{0}[System.Serializable]", new string('\t', tabIndex));
+                    builder.AppendLine();
+                    builder.AppendFormat("{0}class {1}", new string('\t', tabIndex), className);
                     builder.AppendLine();
                     builder.AppendFormat("{0}{{", new string('\t', tabIndex));
                     builder.AppendLine();
                     tabIndex++;
                 }
-                if (hasClass2)
-                {
-                    builder.AppendFormat("{0}class {1}", new string('\t', tabIndex), tupleInfo.Item3);
-                    builder.AppendLine();
-                    builder.AppendFormat("{0}{{", new string('\t', tabIndex));
-                    builder.AppendLine();
-                    tabIndex++;
-                }
+
                 {
                     for (int i = 0; i < memberCount; i++)
                     {
@@ -103,7 +97,7 @@ namespace BinaryAnalyzer.Generator
                         {
                             case BinaryTypeEnumeration.Primitive:
                             case BinaryTypeEnumeration.PrimitiveArray:
-                                memberType = additionalInfo.ToString();
+                                memberType = "System." + additionalInfo.ToString();
                                 break;
                             case BinaryTypeEnumeration.String:
                                 memberType = "string";
@@ -120,6 +114,13 @@ namespace BinaryAnalyzer.Generator
                                 break;
                             default:
                                 throw new NotImplementedException("BinaryTypeEnumeration：" + binaryTypeEnum);
+                        }
+
+                        //generic
+                        var index = tupleInfo.Item3.IndexOf(memberType);
+                        if (index != -1)
+                        {
+                            memberType = "T" + index;
                         }
 
                         var isProperty = memberName.Contains(k_BackingField);
@@ -139,13 +140,8 @@ namespace BinaryAnalyzer.Generator
                         builder.AppendLine();
                     }
                 }
-                if (hasClass2)
-                {
-                    tabIndex--;
-                    builder.AppendFormat("{0}}}", new string('\t', tabIndex));
-                    builder.AppendLine();
-                }
-                if (hasClass1)
+
+                foreach (var className in tupleInfo.Item2)
                 {
                     tabIndex--;
                     builder.AppendFormat("{0}}}", new string('\t', tabIndex));

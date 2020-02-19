@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace BinaryAnalyzer.Extensions
 {
@@ -46,28 +47,172 @@ namespace BinaryAnalyzer.Extensions
         /// 解析类名
         /// </summary>
         /// <param name="name"></param>
-        /// <returns>namespace,class1,class2</returns>
-        static public Tuple<string, string, string> GetClassNameTree(string name)
+        /// <returns>namespace, classNames, genericTypeNames</returns>
+        static public Tuple<string, List<string>, List<string>> GetNamespaceAndClassNames(string name)
         {
-            if (name.Contains("`"))
+            try
             {
-                throw new Exception("暂不支持泛型解析");
+                var namespaceValue = string.Empty;
+                var classNames = new List<string>();
+                var genericTypeNames = new List<string>();
+
+                //generic
+                var index = name.IndexOf("[");
+                if (index != -1)
+                {
+                    var arg = name.Substring(index, name.Length - index);
+                    genericTypeNames = GetGenericTypeNames(arg);
+
+                    name = name.Substring(0, index);
+                }
+
+                var splits = name.Split('+').ToList();
+                var namespaceSplits = splits[0].Split('.').ToList();
+                splits.RemoveAt(0);
+
+                if (namespaceSplits.Count == 1)
+                {
+                    classNames.Add(namespaceSplits[0]);
+                }
+                else
+                {
+                    classNames.Add(namespaceSplits[namespaceSplits.Count - 1]);
+                    namespaceSplits.RemoveAt(namespaceSplits.Count - 1);
+                    namespaceValue = string.Join('.', namespaceSplits.ToArray());
+                }
+
+                foreach (var item in splits)
+                {
+                    var index1 = item.IndexOf('`');
+                    var className = item;
+
+                    if (index1 != -1)
+                    {
+                        var genericCount = int.Parse(item.Substring(index1 + 1, item.Length - index1 - 1));
+                        className = item.Substring(0, index1);
+
+                        var temp = new List<string>();
+                        for (int i = 0; i < genericCount; i++)
+                        {
+                            temp.Add("T" + i);
+                        }
+
+                        className = string.Format("{0}<{1}>", className, string.Join(", ", temp.ToArray()));
+                    }
+
+                    classNames.Add(className);
+                }
+
+                return new Tuple<string, List<string>, List<string>>(namespaceValue, classNames, genericTypeNames);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("类名解析失败.\n" + ex.ToString());
             }
 
-            var index = name.IndexOf("+");
-            var lastIndex = name.LastIndexOf("+");
-            if (index != -1 && lastIndex != -1 && index != lastIndex)
+            throw new Exception("类名解析失败");
+        }
+
+        static public List<string> GetGenericTypeNames(string str)
+        {
+            var genericTypeNames = new List<List<char>>();
+            var chars = str.ToCharArray();
+
+            const int CommaCount1 = 4;
+            const int CommaCount2 = 5;
+
+            var isAdd = false;
+            var isBracketBreak = false;
+            var isEnd = false;
+            var leftBracket = 0;
+            var rightBracket = 0;
+            var commaCount = CommaCount1;
+
+            var list = new List<char>();
+            genericTypeNames.Add(list);
+
+            for (int i = chars.Length - 1; i >= 0; i--)
             {
-                throw new Exception("暂不支持嵌套结构解析");
+                var ch = chars[i];
+
+                if (!isAdd)
+                {
+                    if (ch == ',')
+                    {
+                        commaCount--;
+
+                        if (commaCount == 0)
+                        {
+                            isAdd = true;
+                        }
+                    }
+                }
+                else
+                {
+                    if (isEnd || (isBracketBreak && (ch == '[' || ch == ']')))
+                    {
+                        commaCount = CommaCount2;
+
+                        if (isEnd && ch == ',')
+                        {
+                            commaCount--;
+                        }
+
+                        isAdd = false;
+                        isEnd = false;
+                        isBracketBreak = false;
+                        leftBracket = 0;
+                        rightBracket = 0;
+
+                        list = new List<char>();
+                        genericTypeNames.Add(list);
+
+                        continue;
+                    }
+
+                    switch (ch)
+                    {
+                        case '[':
+                            leftBracket++;
+
+                            if (leftBracket >= rightBracket)
+                            {
+                                isBracketBreak = true;
+                            }
+
+                            if (leftBracket > rightBracket)
+                            {
+                                isEnd = true;
+                                continue;
+                            }
+
+                            break;
+                        case ']':
+                            rightBracket++;
+                            break;
+                        default:
+                            break;
+                    }
+
+                    list.Add(ch);
+                }
             }
 
-            var match = Regex.Match(name, @"((?<namespace>[\w\.]+)\.)?(?<class1>\w+)(\+(?<class2>\w+))?");
-            if (!match.Success)
+            //移除末尾空数组
+            if (genericTypeNames[genericTypeNames.Count - 1].Count == 0)
             {
-                throw new Exception("类名解析失败");
+                genericTypeNames.RemoveAt(genericTypeNames.Count - 1);
             }
 
-            return new Tuple<string, string, string>(match.Groups["namespace"].Value, match.Groups["class1"].Value, match.Groups["class2"].Value);
+            genericTypeNames.Reverse();
+            var temp = new List<string>();
+            foreach (var item in genericTypeNames)
+            {
+                item.Reverse();
+                temp.Add(new string(item.ToArray()));
+            }
+
+            return temp;
         }
     }
 }
